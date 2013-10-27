@@ -2,13 +2,19 @@ Package: siesta
 Type: Package
 Title: Generic tools to work with REST api
 Version: 0.0.0
-Author@R: c(
-    person("Romain", "Francois", role = c("aut", "cre"), email = "romain@r-enthusiasts.com")
-    )
+Author@R: c( person("Romain", "Francois", role = c("aut", "cre"), email =
+    "romain@r-enthusiasts.com"), person("Hadley", Whickham", role = "ctb",
+    email = "h.wickham@gmail.com" )
 Description: Generic tools to work with REST api
 Imports:
-    dplyr, httr, rjson
+    dplyr,
+    httr,
+    rjson
 VignetteBuilder: knitr
 Depends:
     R (>= 3.0.2)
 License: GPL-2
+Collate:
+    'grab.R'
+    'siesta.R'
+    'str_interp.R'

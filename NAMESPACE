@@ -1,4 +1,6 @@
-importFrom(httr, GET, content )
-importFrom(rjson, fromJSON) 
+importFrom( rjson, fromJSON)
+importFrom( httr, GET, content)
 
-export(grab)  
+export(grab)
+export(json_api)
+export(str_interp)
