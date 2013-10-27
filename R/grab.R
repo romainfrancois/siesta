@@ -4,8 +4,7 @@ grab <- function(json, ...){
   parent_frame <- parent.frame()
   columns <- lapply( what, function(e){
     sapply( json, function(.) {
-      env <- as.environment(.)
-      parent.env(env) <- parent_frame
+      env <- list2env(., parent = parent_frame)
       eval(e, env ) 
     })
   })
