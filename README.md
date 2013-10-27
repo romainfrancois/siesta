@@ -1,4 +1,5 @@
 siesta
 ======
 
-Generic tools to work with rest api
+Generic Tools to work with REST apis
+
