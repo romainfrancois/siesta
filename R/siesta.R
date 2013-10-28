@@ -41,3 +41,62 @@ names2 <- function(x) {
 
 #----------
 
+get_vars <- function(string) {
+  var_matches <- gregexpr(":[a-zA-Z_0-9]+", string)
+  vars <- regmatches(string, var_matches)[[1]]
+  vars <- unique(unlist(gsub(":", "", vars)))
+  vars  
+}
+
+str_interp <- function(string, env = parent.frame()) {
+  if (is.list(env)) env <- list2env(env)
+  
+  vars <- get_vars(string)
+  # Do backwards, so positions don't change
+  for (var in vars) {
+    if (!exists(var, envir = env, inherits = FALSE)) {
+      stop("Could not find ", var, " in env", call. = FALSE)
+    }
+    value <- get(var, envir = env, inherits = FALSE)
+
+    string <- gsub(paste0(":", var), value, string)
+  }
+
+  string  
+}
+
+grab <- function(json, ..., .dots = named_dots(...) ){
+  columns <- lapply( .dots, function(e){
+    sapply( json, function(.) {
+      eval(e, list2env(.) ) 
+    })
+  })
+  names(columns) <- names(.dots)
+  as.data.frame(columns, stringsAsFactors = FALSE)
+}
+
+
+#' @export
+json_api <- function(prefix = "https://api.github.com/" ){
+  if( !grepl( "/$", prefix ) ) prefix <- paste( prefix, "/", sep = "" )
+  list(
+    GET = function(text, env){
+      url <- str_interp( sprintf( "%s%s", prefix, text ), env )
+      fromJSON( content( GET(url), "text" ) )
+    }, 
+    bind = function(string, ...){
+      vars <- get_vars(string)
+      dots <- named_dots(...)
+      fun <- function(){
+        env <- environment()
+        url <- str_interp( sprintf( "%s%s", prefix, string ), env )
+        data <- fromJSON( content( GET(url), "text" ) )
+        grab( data, .dots = dots ) 
+      }
+      formals(fun) <- generate_formals(vars)
+      fun
+    }
+  )  
+}
+
+

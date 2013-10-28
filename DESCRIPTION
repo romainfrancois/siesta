@@ -13,8 +13,8 @@ Imports:
 VignetteBuilder: knitr
 Depends:
     R (>= 3.0.2)
+LinkingTo: Rcpp (>= 0.10.6)
 License: GPL-2
 Collate:
-    'grab.R'
     'siesta.R'
-    'str_interp.R'
+    'RcppExports.R'
