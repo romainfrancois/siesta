@@ -65,6 +65,7 @@ str_interp <- function(string, env = parent.frame()) {
   string  
 }
 
+#' @export
 grab <- function(json, ..., .dots = named_dots(...) ){
   columns <- lapply( .dots, function(e){
     sapply( json, function(.) {
@@ -80,18 +81,17 @@ grab <- function(json, ..., .dots = named_dots(...) ){
 json_api <- function(prefix = "https://api.github.com/" ){
   if( !grepl( "/$", prefix ) ) prefix <- paste( prefix, "/", sep = "" )
   list(
-    GET = function(text, env){
+    GET = function(text, env = globalenv() ){
       url <- str_interp( sprintf( "%s%s", prefix, text ), env )
       fromJSON( content( GET(url), "text" ) )
     }, 
-    bind = function(string, ...){
+    bind = function(string){
       vars <- get_vars(string)
-      dots <- named_dots(...)
       fun <- function(){
         env <- environment()
         url <- str_interp( sprintf( "%s%s", prefix, string ), env )
         data <- fromJSON( content( GET(url), "text" ) )
-        grab( data, .dots = dots ) 
+        data 
       }
       formals(fun) <- generate_formals(vars)
       fun

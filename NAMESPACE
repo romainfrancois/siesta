@@ -2,4 +2,5 @@ useDynLib(siesta)
 importFrom(httr, GET, content)
 importFrom(rjson, fromJSON)
 export(json_api)
+export(grab)
 
