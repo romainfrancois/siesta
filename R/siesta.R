@@ -80,22 +80,26 @@ grab <- function(json, ..., .dots = named_dots(...) ){
 #' @export
 json_api <- function(prefix = "https://api.github.com/" ){
   if( !grepl( "/$", prefix ) ) prefix <- paste( prefix, "/", sep = "" )
-  list(
-    GET = function(text, env = globalenv() ){
-      url <- str_interp( sprintf( "%s%s", prefix, text ), env )
-      fromJSON( content( GET(url), "text" ) )
-    }, 
-    bind = function(string){
-      vars <- get_vars(string)
-      fun <- function(){
-        env <- environment()
-        url <- str_interp( sprintf( "%s%s", prefix, string ), env )
-        data <- fromJSON( content( GET(url), "text" ) )
-        data 
-      }
-      formals(fun) <- generate_formals(vars)
-      fun
+  
+  .GET <- function(text, env = globalenv() ){
+    url <- str_interp( sprintf( "%s%s", prefix, text ), env )
+    fromJSON( content( GET(url), "text" ) )
+  }
+  bind <- function(string, ...){
+    .dots <- named_dots(...)
+    vars <- get_vars(string)
+    fun <- function(){
+      env <- environment()
+      url <- str_interp( sprintf( "%s%s", prefix, string ), env )
+      data <- fromJSON( content( GET(url), "text" ) )
+      if( length(.dots) ) grab( data, .dots = .dots ) else data 
     }
+    formals(fun) <- generate_formals(vars)
+    fun
+  }
+  list(
+    GET = .GET, 
+    bind = bind
   )  
 }
 
